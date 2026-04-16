@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de Cotizaciones | Viajando por el Mundo</title>
+  <meta name="description" content="Sistema profesional de generación de cotizaciones para la agencia de viajes Viajando por el Mundo.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Ocultar la app hasta que se loguee */
+    #app-container { display: none; }
+    #login-screen {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--navy-900);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 10000;
+      transition: opacity 0.5s ease;
+    }
+  </style>
+</head>
+<body class="loading">
+
+  <!-- PANTALLA DE LOGIN -->
+  <div id="login-screen">
+    <div class="login-card">
+      <div class="login-header">
+        <img src="logo.png" alt="Logo" class="login-logo">
+        <h2>Acceso Agencia</h2>
+        <p>Introduce tus credenciales para continuar</p>
+      </div>
+      <div class="login-form">
+        <div class="field-group">
+          <label class="field-label">Correo Electrónico</label>
+          <input type="email" id="login-email" class="field-input" placeholder="admin@viajando.com">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Contraseña</label>
+          <input type="password" id="login-pass" class="field-input" placeholder="••••••••">
+        </div>
+        <button class="btn btn-primary" style="width:100%; margin-top:10px;" id="login-btn">Entrar al Sistema</button>
+        <button class="btn btn-outline" style="width:100%; margin-top:10px;" id="register-btn" onclick="handleRegister()">Crear Nueva Cuenta</button>
+      </div>
+      <div id="login-error" style="color:#ff6b6b; font-size:0.8rem; margin-top:10px; text-align:center; display:none;"></div>
+    </div>
+  </div>
+
+  <div id="app-container">
+    <div class="main-container">
+
+      <!-- ══ MOBILE TABS ══ -->
+      <div class="mobile-tabs" id="mobile-tabs">
+        <button class="tab-btn active" id="tab-form" onclick="switchTab('form')">✏️ Formulario</button>
+        <button class="tab-btn" id="tab-preview" onclick="switchTab('preview')">👁️ Vista Previa</button>
+      </div>
+
+      <div class="app-container">
+
+        <!-- ════════════════════════════════
+             LEFT: FORM PANEL
+        ════════════════════════════════ -->
+        <aside class="form-panel" id="form-panel">
+
+          <!-- Agency Branding Header -->
+          <div class="agency-header">
+            <div class="header-glow"></div>
+            <div class="agency-logo-wrap">
+              <img
+                src="logo.png"
+                alt="Viajando X el Mundo"
+                class="agency-logo-img"
+                onerror="this.style.display='none'; document.getElementById('agency-text-fallback').style.display='flex';"
+              >
+              <div id="agency-text-fallback" class="agency-logo-fallback" style="display:none">
+                <div class="globe-wrap">
+                  <span class="globe-emoji">🌍</span>
+                  <div class="orbit-ring"></div>
+                </div>
+                <div class="agency-text">
+                  <h1 class="agency-name">Viajando por el Mundo</h1>
+                  <p class="agency-sub">Sistema de Cotizaciones Profesional</p>
+                </div>
+              </div>
+            </div>
+            <p class="agency-sub" style="text-align:center;margin-top:6px;">Viajando X el Mundo</p>
+          </div>
+
+          <!-- ─── SECTION 1: Agente de Viajes ─── -->
+          <div class="form-section" id="sec-agent">
+            <div class="section-header" onclick="toggleSection('sec-agent')">
+              <div class="section-header-left">
+                <div class="section-icon-wrap icon-purple">👤</div>
+                <h2 class="section-title">Agente de Viajes</h2>
+              </div>
+              <span class="chevron open">›</span>
+            </div>
+            <div class="section-body open">
+              <div class="field-row">
+                <div class="field-group">
+                  <label class="field-label" for="agent-name">Nombre del Agente <span class="req">*</span></label>
+                  <input type="text" id="agent-name" class="field-input" list="agents-list" placeholder="Ingresa o selecciona tu nombre" onchange="saveAgentToDB(this.value)">
+                  <datalist id="agents-list"></datalist>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─── SECTION 2: Trip Details ─── -->
+          <div class="form-section" id="sec-trip">
+            <div class="section-header" onclick="toggleSection('sec-trip')">
+              <div class="section-header-left">
+                <div class="section-icon-wrap icon-blue">🗺️</div>
+                <h2 class="section-title">Datos del Viaje</h2>
+              </div>
+              <span class="chevron open">›</span>
+            </div>
+            <div class="section-body open">
+              <div class="field-row">
+                <div class="field-group">
+                  <label class="field-label" for="destination">Destino <span class="req">*</span></label>
+                  <input type="text" id="destination" class="field-input" list="destinations-list" placeholder="Ej: Punta Cana, República Dominicana" onchange="saveDestinationToDB(this.value)">
+                  <datalist id="destinations-list"></datalist>
+                  <datalist id="hotel-names-list"></datalist>
+                </div>
+              </div>
+              <div class="field-row two-col">
+                <div class="field-group">
+                  <label class="field-label" for="date-start">Fecha de Salida <span class="req">*</span></label>
+                  <input type="date" id="date-start" class="field-input" onchange="updateDuration()">
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="date-end">Fecha de Regreso <span class="req">*</span></label>
+                  <input type="date" id="date-end" class="field-input" onchange="updateDuration()">
+                </div>
+              </div>
+              <div class="duration-badge" id="duration-badge" style="display:none">
+                📅 <span id="duration-text"></span>
+              </div>
+              <div class="field-row two-col">
+                <div class="field-group">
+                  <label class="field-label" for="margin">% de Ganancia <span class="req">*</span></label>
+                  <div class="input-suffix-wrap">
+                    <input type="number" id="margin" class="field-input" placeholder="20" min="0" max="99" step="0.5" oninput="recalcAllHotels()">
+                    <span class="input-suffix">%</span>
+                  </div>
+                  <p class="field-hint">PVF = Costo Base ÷ (1 - %)</p>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="plan-type">Tipo de Plan</label>
+                  <select id="plan-type" class="field-input">
+                    <option value="todo incluido">Todo Incluido</option>
+                    <option value="solo alojamiento">Solo Alojamiento</option>
+                    <option value="media pensión">Media Pensión</option>
+                    <option value="desayuno incluido">Desayuno Incluido</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field-row two-col">
+                <div class="field-group">
+                  <label class="field-label" for="client-name">Nombre del Cliente</label>
+                  <input type="text" id="client-name" class="field-input" placeholder="Sr./Sra. Apellido">
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="num-pax">N° de Pasajeros</label>
+                  <input type="number" id="num-pax" class="field-input" placeholder="2" min="1">
+                </div>
+              </div>
+
+              <!-- Extras: Tourism Card -->
+              <div class="toggle-field">
+                <label class="toggle-label">
+                  <input type="checkbox" id="chk-tourism" onchange="toggleExtra('tourism-detail')">
+                  <span class="toggle-switch"></span>
+                  <span>Tarjeta de turismo / Impuesto adicional</span>
+                </label>
+                <div class="toggle-extra" id="tourism-detail">
+                  <input type="text" class="field-input mt-1" id="tourism-text" placeholder="Ej: Tarjeta de turismo USD 10 (pago en aeropuerto)">
+                </div>
+              </div>
+
+              <!-- Extras: Vaccine -->
+              <div class="toggle-field">
+                <label class="toggle-label">
+                  <input type="checkbox" id="chk-vaccine" onchange="toggleExtra('vaccine-detail')">
+                  <span class="toggle-switch"></span>
+                  <span>Requiere vacunación</span>
+                </label>
+                <div class="toggle-extra" id="vaccine-detail">
+                  <input type="text" class="field-input mt-1" id="vaccine-text" placeholder="Ej: Fiebre amarilla (requerida)">
+                </div>
+              </div>
+
+              <!-- Extras: Expert Recommendations -->
+              <div class="toggle-field">
+                <label class="toggle-label">
+                  <input type="checkbox" id="chk-recom" onchange="toggleExtra('recom-detail')">
+                  <span class="toggle-switch"></span>
+                  <span>Recomendaciones Imperdibles</span>
+                </label>
+                <div class="toggle-extra" id="recom-detail">
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div class="field-hint">Genera un texto atractivo con Inteligencia Artificial.</div>
+                    <div class="field-hint" style="text-align:right">Máx. 240 caracteres</div>
+                  </div>
+                  <textarea id="recom-text" class="field-input mt-1" maxlength="240" rows="3" 
+                            placeholder="Ej: No te pierdas el atardecer en el Faro, el tour de snorkel en Isla Saona y cenar en el restaurante Capitán Cook."></textarea>
+                  <button type="button" class="btn btn-ai" style="width:100%; margin-top:8px; font-size:0.75rem; padding:8px;" onclick="generateRecommendations()">
+                    ✨ Generar Recomendaciones con IA
+                  </button>
+                </div>
+              </div>
+
+              <!-- Extra not-included -->
+              <div class="field-group">
+                <label class="field-label" for="extra-not-inc">Ítems adicionales NO incluidos</label>
+                <textarea id="extra-not-inc" class="field-input" rows="2" placeholder="Ej: Seguro de viaje opcional"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─── SECTION 3: Hotels ─── -->
+          <div class="form-section" id="sec-hotels">
+            <div class="section-header" onclick="toggleSection('sec-hotels')">
+              <div class="section-header-left">
+                <div class="section-icon-wrap icon-teal">🏨</div>
+                <h2 class="section-title">Opciones de Alojamiento</h2>
+              </div>
+              <span class="chevron open">›</span>
+            </div>
+            <div class="section-body open">
+              <div id="hotels-list">
+                <!-- Hotel cards injected here -->
+              </div>
+              <button class="btn btn-add-hotel" onclick="addHotel()">
+                <span class="btn-plus">+</span> Agregar Hotel
+              </button>
+            </div>
+          </div>
+
+          <!-- ─── SECTION 4: Flight ─── -->
+          <div class="form-section" id="sec-flight">
+            <div class="section-header" onclick="toggleSection('sec-flight')">
+              <div class="section-header-left">
+                <div class="section-icon-wrap icon-gold">✈️</div>
+                <h2 class="section-title">Itinerario de Vuelo</h2>
+              </div>
+              <span class="chevron open">›</span>
+            </div>
+            <div class="section-body open">
+              <p class="field-hint mb-2">Sube la captura de pantalla con el itinerario. La IA extraerá los datos automáticamente.</p>
+
+              <!-- Upload Zone -->
+              <div class="upload-zone" id="flight-upload-zone"
+                   onclick="document.getElementById('flight-file-input').click()"
+                   ondragover="handleDragOver(event)"
+                   ondrop="handleDrop(event)">
+                <input type="file" id="flight-file-input" accept="image/*" style="display:none" onchange="handleFlightUpload(event)">
+                <div class="upload-inner" id="upload-inner">
+                  <div class="upload-icon-big">📋</div>
+                  <p class="upload-title">Haz clic, arrastra o pega (Ctrl+V) la imagen aquí</p>
+                  <p class="upload-sub">PNG, JPG, WEBP — máx. 10 MB</p>
+                </div>
+              </div>
+
+              <!-- Flight image preview -->
+              <div id="flight-img-preview" style="display:none">
+                <img id="flight-img-el" src="" alt="Vista previa del vuelo" class="flight-img-preview">
+                <div class="flight-img-actions">
+                  <button class="btn btn-ai" id="btn-extract" onclick="extractFlightData()">🤖 Extraer datos con IA</button>
+                  <button class="btn btn-ghost-danger" onclick="clearFlight()">🗑️ Eliminar</button>
+                </div>
+              </div>
+
+              <!-- Flight data editor (post-extraction) -->
+              <div id="flight-data-editor" style="display:none">
+                <div class="extraction-header">
+                  <span class="extraction-badge">✅ Datos Extraídos</span>
+                  <button class="link-btn" onclick="addFlightLeg()">+ Agregar tramo</button>
+                </div>
+                <div id="flight-legs-list">
+                  <!-- Flight leg cards -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─── ACTION BUTTONS ─── -->
+          <div class="form-actions">
+            <button class="btn btn-primary btn-generate" id="btn-generate" onclick="generateQuote()">
+              ⚡ Generar Cotización
+            </button>
+            <button class="btn btn-success btn-pdf" id="btn-pdf" onclick="downloadPDF()" disabled>
+              📄 Descargar PDF
+            </button>
+          </div>
+          
+          <!-- ─── BOTTOM CONFIG: API Settings ─── -->
+          <div class="sidebar-footer">
+            <div class="form-section collapsed" id="sec-api">
+              <div class="footer-config-header" onclick="toggleSection('sec-api')">
+                <div class="config-gear-wrap">⚙️</div>
+                <span class="config-label">Configuración sistema</span>
+                <span class="chevron" style="font-size: 1rem; margin-left: auto;">›</span>
+              </div>
+              <div class="section-body">
+                <div class="info-banner" style="margin-top: 10px;">
+                  <span>ℹ️</span>
+                  <div>
+                    <strong>Gemini API Key</strong> — Necesaria para extraer datos y buscar fotos.
+                    <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Obtener Key →</a>
+                  </div>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="api-key">Gemini API Key</label>
+                  <div class="input-with-btn">
+                    <input type="password" id="api-key" class="field-input" placeholder="AIzaSy..." autocomplete="off">
+                    <button class="icon-toggle-btn" title="Mostrar" onclick="toggleVisibility('api-key', this)">👁️</button>
+                  </div>
+                </div>
+                <button class="btn btn-secondary" style="width:100%" id="save-keys-btn" onclick="saveKeys()">💾 Guardar Key</button>
+                <div class="api-status-msg" id="api-status-msg"></div>
+              </div>
+            </div>
+            <button class="btn btn-outline" style="width:100%; margin-top: 15px; border-color: rgba(255,100,100,0.3); color: #ff6b6b;" onclick="firebase.auth().signOut()">🚪 Cerrar Sesión</button>
+          </div>
+
+        </aside>
+
+        <!-- ════════════════════════════════
+             RIGHT: PREVIEW PANEL
+        ════════════════════════════════ -->
+        <main class="preview-panel" id="preview-panel">
+          <div class="preview-sticky">
+            <div class="preview-header" style="display: flex; justify-content: center; align-items: center; position: relative;">
+              <h2 class="preview-title" style="margin: 0; text-align: center;">Vista Previa de la Cotización</h2>
+              <div class="header-actions" style="position: absolute; right: 2rem;">
+                <button class="btn btn-primary" onclick="downloadPDF()">
+                  <span>📄</span> Exportar PDF
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="preview-scroll">
+            <!-- Placeholder -->
+            <div class="preview-placeholder" id="preview-placeholder">
+              <div class="orbit-container">
+                <img src="logo.png" alt="Logo" class="orbit-center-logo" onerror="this.style.display='none'">
+                <div class="orbit-plane">✈</div>
+              </div>
+              <h3 class="placeholder-title">Tu cotización aparecerá aquí</h3>
+              <p class="placeholder-sub">Completa los datos del formulario y presiona<br><strong>"Generar Cotización"</strong></p>
+              <div class="placeholder-steps">
+                <div class="step-item"><span class="step-num">1</span>Identifica al Agente de Viajes</div>
+                <div class="step-item"><span class="step-num">2</span>Ingresa datos del viaje</div>
+                <div class="step-item"><span class="step-num">3</span>Agrega hoteles y precios</div>
+                <div class="step-item"><span class="step-num">4</span>Agrega itinerario de vuelos</div>
+                <div class="step-item"><span class="step-num">5</span>¡Genera y descarga!</div>
+              </div>
+            </div>
+
+            <!-- Quote document output -->
+            <div id="quote-output" style="display:none">
+              <!-- Rendered quote goes here -->
+            </div>
+          </div>
+        </main>
+
+      </div>
+
+      <!-- ══ LOADING OVERLAY ══ -->
+      <div class="loading-overlay" id="loading-overlay" style="display:none">
+        <div class="loading-card">
+          <div class="loading-ring">
+            <div class="loading-plane">✈</div>
+          </div>
+          <p class="loading-msg" id="loading-msg">Procesando...</p>
+          <p class="loading-sub" id="loading-sub"></p>
+        </div>
+      </div>
+    </div> <!-- End Main Container -->
+  </div> <!-- End App Container -->
+
+  <!-- ══ TOAST CONTAINER ══ -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Dependencies -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  
+  <!-- Firebase Cloud Backend -->
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-storage-compat.js"></script>
+  
+  <script src="app.js"></script>
+</body>
+</html>
