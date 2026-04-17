@@ -1380,6 +1380,13 @@ function buildQuoteHTML(d) {
     `;
   }).join('');
 
+  // Dynamic tickets text
+  let ticketsText = `Tiquetes aéreos Medellín — ${d.destination} — Medellín`;
+  if (d.flightLegs && d.flightLegs.length > 0) {
+    const origin = d.flightLegs[0].origen_ciudad || 'Medellín';
+    ticketsText = `Tiquetes aéreos ${origin} — ${d.destination} — ${origin}`;
+  }
+
   return `
     <div class="quote-doc" id="quote-doc">
       <!-- ══ HEADER ══ -->
@@ -1420,7 +1427,7 @@ function buildQuoteHTML(d) {
           <div class="q-box q-box-includes">
             <div class="q-box-title">✅ El Plan Incluye</div>
             <ul>
-              <li>Tiquetes aéreos Medellín — ${d.destination} — Medellín</li>
+              <li>${ticketsText}</li>
               <li>Alojamiento ${durationStr} con plan <strong>${d.planType}</strong></li>
               <li>Traslado aeropuerto — hotel — aeropuerto</li>
               <li>Asistencia médica de viaje</li>
