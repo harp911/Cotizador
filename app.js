@@ -329,7 +329,12 @@ function init() {
   nextWeek.setDate(nextWeek.getDate() + 4);
   if (de) de.value = formatDateInput(nextWeek);
   
-  addHotel();
+  // Garantizar que la lista de hoteles esté lista antes de agregar
+  const hotelsList = document.getElementById('hotels-list');
+  if (hotelsList) {
+    hotelsList.innerHTML = ''; 
+    addHotel();
+  }
 }
 
 /* ────────────────────────────────────────────────────────────────

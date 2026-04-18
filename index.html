@@ -157,6 +157,7 @@
                   </select>
                 </div>
               </div>
+
               <div class="field-row two-col">
                 <div class="field-group">
                   <label class="field-label" for="client-name">Nombre del Cliente</label>
@@ -168,7 +169,7 @@
                 </div>
               </div>
 
-              <!-- Extras: Tourism Card -->
+              <!-- Extras toggle fields -->
               <div class="toggle-field">
                 <label class="toggle-label">
                   <input type="checkbox" id="chk-tourism" onchange="toggleExtra('tourism-detail')">
@@ -180,7 +181,6 @@
                 </div>
               </div>
 
-              <!-- Extras: Vaccine -->
               <div class="toggle-field">
                 <label class="toggle-label">
                   <input type="checkbox" id="chk-vaccine" onchange="toggleExtra('vaccine-detail')">
@@ -192,30 +192,23 @@
                 </div>
               </div>
 
-              <!-- Extras: Expert Recommendations -->
               <div class="toggle-field">
                 <label class="toggle-label">
                   <input type="checkbox" id="chk-recom" onchange="toggleExtra('recom-detail')">
                   <span class="toggle-switch"></span>
-                  <span>Recomendaciones Imperdibles</span>
+                  <span>Recomendaciones Imperdibles (IA)</span>
                 </label>
                 <div class="toggle-extra" id="recom-detail">
-                  <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div class="field-hint">Genera un texto atractivo con Inteligencia Artificial.</div>
-                    <div class="field-hint" style="text-align:right">Máx. 240 caracteres</div>
-                  </div>
-                  <textarea id="recom-text" class="field-input mt-1" maxlength="240" rows="3" 
-                            placeholder="Ej: No te pierdas el atardecer en el Faro, el tour de snorkel en Isla Saona y cenar en el restaurante Capitán Cook."></textarea>
-                  <button type="button" class="btn btn-ai" style="width:100%; margin-top:8px; font-size:0.75rem; padding:8px;" onclick="generateRecommendations()">
-                    ✨ Generar Recomendaciones con IA
+                  <textarea id="recom-text" class="field-input mt-1" maxlength="240" rows="3" placeholder="Generar con IA..."></textarea>
+                  <button type="button" class="btn btn-ai" style="width:100%; margin-top:8px;" onclick="generateRecommendations()">
+                    ✨ Sugerir con IA
                   </button>
                 </div>
               </div>
 
-              <!-- Extra not-included -->
               <div class="field-group">
-                <label class="field-label" for="extra-not-inc">Ítems adicionales NO incluidos</label>
-                <textarea id="extra-not-inc" class="field-input" rows="2" placeholder="Ej: Seguro de viaje opcional"></textarea>
+                <label class="field-label" for="extra-not-inc">No incluye (adicional)</label>
+                <textarea id="extra-not-inc" class="field-input" rows="2" placeholder="Gastos no especificados..."></textarea>
               </div>
             </div>
           </div>
@@ -230,9 +223,7 @@
               <span class="chevron open">›</span>
             </div>
             <div class="section-body open">
-              <div id="hotels-list">
-                <!-- Hotel cards injected here -->
-              </div>
+              <div id="hotels-list"></div>
               <button class="btn btn-add-hotel" onclick="addHotel()">
                 <span class="btn-plus">+</span> Agregar Hotel
               </button>
