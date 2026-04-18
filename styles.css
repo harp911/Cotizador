@@ -1317,9 +1317,14 @@ select.field-input option {
 /* ── Flight Table ── */
 .q-flight-table {
   width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 28px;
-  font-size: 0.8rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 30px;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  overflow: hidden;
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 .q-flight-table thead tr {
@@ -1380,24 +1385,20 @@ select.field-input option {
 .q-hotel-section { margin-bottom: 36px; }
 
 .q-hotel-card {
+  display: flex; /* Layout horizontal */
+  background: white;
   border: 1px solid #E0E8F4;
   border-radius: 16px;
   overflow: hidden;
-  margin-bottom: 28px;
+  margin-bottom: 30px;
   box-shadow: 0 4px 20px rgba(13, 46, 107, 0.08);
-  display: flex;
-  flex-direction: column;
-  page-break-inside: avoid;
   break-inside: avoid;
-}
-
-/* Force page break after every 2nd hotel, to perfectly align 2 hotels per PDF page */
-.q-hotel-card:nth-child(even) {
-  page-break-after: always;
+  page-break-inside: avoid;
+  page-break-after: always; /* Forzar salto de página tras cada hotel */
   break-after: page;
 }
 
-/* Ensure the last hotel doesn't create a blank trailing page */
+/* El último hotel no fuerza página nueva para permitir que las recomendaciones fluyan o cierren el doc */
 .q-hotel-card:last-child {
   page-break-after: auto;
   break-after: auto;
@@ -1407,6 +1408,7 @@ select.field-input option {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 140px 140px;
+  width: 320px; /* Ancho fijo para mantener layout horizontal en PDF */
   gap: 0;
   background: #E0E8F4;
   overflow: hidden;
@@ -1498,6 +1500,8 @@ select.field-input option {
   gap: 16px;
   align-items: center;
   margin-bottom: 24px;
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 .q-recom-icon {
@@ -1511,6 +1515,12 @@ select.field-input option {
   font-style: italic;
   line-height: 1.5;
   font-weight: 500;
+}
+
+/* Reglas globales de integridad para el PDF */
+.q-notes, .q-flight-table, .q-recom-box, .quote-hdr, .quote-footer {
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 /* ── Quote Footer ── */
