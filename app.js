@@ -1551,7 +1551,8 @@ async function downloadPDF() {
   const currentHeight = element.scrollHeight;
   const a4HeightPx = 1122.5; // Relación matemática A4 en px para 794px de ancho (794 * 297/210)
   const totalPages = Math.ceil(currentHeight / a4HeightPx);
-  element.style.minHeight = (totalPages * a4HeightPx) + 'px';
+  // Restamos 2px de seguridad para evitar que una micro-fracción genere una hoja en blanco extra
+  element.style.minHeight = (totalPages * a4HeightPx - 2) + 'px';
 
   const opt = {
     margin:       [0, 0, 0, 0],

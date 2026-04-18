@@ -1505,6 +1505,8 @@ select.field-input option {
   padding: 24px 40px;
   color: rgba(255,255,255,0.85);
   margin-top: auto; /* Empuja el footer al final del contenedor flex */
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 .quote-footer-top {
