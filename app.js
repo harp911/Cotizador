@@ -489,24 +489,43 @@ function recalcHotel(idx) {
   const priceEl         = document.getElementById(`hotel-price-${idx}`);
   if (!costoInput || !priceEl) return;
 
-  const margin = parseFloat(document.getElementById('margin').value) || 0;
+  const marginRec     = parseFloat(document.getElementById('margin').value) || 0;
+  const discountRec   = parseFloat(document.getElementById('discount').value) || 0;
   
   const costo      = parseFloat(costoInput.value.replace(/[^0-9.]/g, '')) || 0;
-  const pvf        = calculatePrice(costo, margin);
+  const pvfStd     = calculatePrice(costo, marginRec);
+  const pvfFinal   = pvfStd ? roundToNearest1000(pvfStd * (1 - discountRec/100)) : null;
   
   const costoNiño  = costoNiñoInput ? (parseFloat(costoNiñoInput.value.replace(/[^0-9.]/g, '')) || 0) : 0;
-  const pvfNiño    = calculatePrice(costoNiño, margin);
+  const pvfNiñoStd = calculatePrice(costoNiño, marginRec);
+  const pvfNiñoFinal = pvfNiñoStd ? roundToNearest1000(pvfNiñoStd * (1 - discountRec/100)) : null;
 
-  let html = `<div>Adulto: <strong>${formatCOP(pvf)}</strong></div>`;
-  if (pvfNiño > 0) {
-    html += `<div style="margin-top:2px; font-size:0.8rem; color:var(--teal-400)">Niño: <strong>${formatCOP(pvfNiño)}</strong></div>`;
+  let html = '';
+  if (discountRec > 0) {
+    html = `
+      <div style="font-size:0.75rem; color:var(--text-muted); text-decoration:line-through; margin-bottom:2px;">
+        Normal: Adulto ${formatCOP(pvfStd)} ${pvfNiñoStd ? ` / Niño ${formatCOP(pvfNiñoStd)}` : ''}
+      </div>
+      <div>Adulto: <strong style="color:var(--success); font-size:1.2rem;">${formatCOP(pvfFinal)}</strong> <span style="background:var(--success); color:#fff; font-size:0.65rem; padding:1px 4px; border-radius:4px; vertical-align:middle;">-${discountRec}%</span></div>
+    `;
+    if (pvfNiñoFinal > 0) {
+      html += `<div style="margin-top:2px; font-size:0.8rem; color:var(--teal-400)">Niño: <strong>${formatCOP(pvfNiñoFinal)}</strong></div>`;
+    }
+  } else {
+    html = `<div>Adulto: <strong>${formatCOP(pvfStd)}</strong></div>`;
+    if (pvfNiñoStd > 0) {
+      html += `<div style="margin-top:2px; font-size:0.8rem; color:var(--teal-400)">Niño: <strong>${formatCOP(pvfNiñoStd)}</strong></div>`;
+    }
   }
+  
   priceEl.innerHTML = html;
   
   const hotel = state.hotels.find(h => h.id === idx);
   if (hotel) {
-    hotel.pvf = pvf;
-    hotel.pvfNiño = pvfNiño;
+    hotel.pvf = pvfFinal || pvfStd;
+    hotel.pvfStd = pvfStd;
+    hotel.pvfNiño = pvfNiñoFinal || pvfNiñoStd;
+    hotel.pvfNiñoStd = pvfNiñoStd;
     hotel.costoBase = costo;
     hotel.costoNiño = costoNiño;
   }
@@ -1243,20 +1262,35 @@ function gatherFormData() {
   const end      = new Date(endVal   + 'T00:00:00');
   const diffDays = Math.round((end - start) / 86400000);
 
-  const hotels = state.hotels
+    const hotels = state.hotels
     .map(h => {
       const nameEl  = document.getElementById(`hotel-name-${h.id}`);
       const costoEl = document.getElementById(`hotel-costo-${h.id}`);
       const costoNinoEl = document.getElementById(`hotel-costonino-${h.id}`);
       const name    = nameEl  ? nameEl.value.trim()  : h.name;
-      const costo   = costoEl ? parseFloat(costoEl.value) || 0 : h.costoBase;
-      const costoNiño = costoNinoEl ? parseFloat(costoNinoEl.value) || 0 : h.costoNiño;
-      const margin  = parseFloat(document.getElementById('margin').value) || 0;
+      const costo   = costoEl ? parseFloat(costoEl.value.replace(/[^0-9.]/g, '')) || 0 : h.costoBase;
+      const costoNiño = costoNinoEl ? parseFloat(costoNinoEl.value.replace(/[^0-9.]/g, '')) || 0 : h.costoNiño;
       
-      const pvf     = calculatePrice(costo, margin);
-      const pvfNiño = calculatePrice(costoNiño, margin);
+      const margin   = parseFloat(document.getElementById('margin').value) || 0;
+      const discount = parseFloat(document.getElementById('discount').value) || 0;
+      
+      const pvfStd     = calculatePrice(costo, margin);
+      const pvfFinal   = pvfStd ? roundToNearest1000(pvfStd * (1 - discount / 100)) : null;
+      const pvfNiñoStd = calculatePrice(costoNiño, margin);
+      const pvfNiñoFinal = pvfNiñoStd ? roundToNearest1000(pvfNiñoStd * (1 - discount / 100)) : null;
 
-      return { ...h, name, costoBase: costo, costoNiño, pvf, pvfNiño, images: h.images };
+      return { 
+        ...h, 
+        name, 
+        costoBase: costo, 
+        costoNiño, 
+        pvf: pvfFinal || pvfStd, 
+        pvfStd,
+        pvfNiño: pvfNiñoFinal || pvfNiñoStd, 
+        pvfNiñoStd,
+        discountPct: discount,
+        images: h.images 
+      };
     })
     .filter(h => h.name);
 
@@ -1376,8 +1410,28 @@ function buildQuoteHTML(d) {
               <div class="q-hotel-price-sub">${d.days} días / ${d.nights} noches — ${d.planType}</div>
             </div>
             <div style="text-align:right">
-              <div class="q-hotel-price-value">${formatCOP(hotel.pvf)} <span style="font-size:0.75rem; font-weight:400; color:rgba(255,255,255,0.7)">Adulto</span></div>
-              ${hotel.pvfNiño > 0 ? `<div class="q-hotel-price-value" style="font-size:1.3rem; margin-top:2px; color:var(--teal-400)">${formatCOP(hotel.pvfNiño)} <span style="font-size:0.65rem; font-weight:400; color:rgba(255,255,255,0.7)">Niño</span></div>` : ''}
+              ${hotel.discountPct > 0 ? `
+                <div style="text-decoration:line-through; font-size:0.85rem; color:rgba(255,255,255,0.4); margin-bottom:-4px;">${formatCOP(hotel.pvfStd)}</div>
+                <div class="q-hotel-price-value" style="color:#00FFCC; font-size:2.2rem; text-shadow: 0 0 20px rgba(0,255,204,0.3);">
+                  ${formatCOP(hotel.pvf)}
+                  <span class="q-discount-badge">-${hotel.discountPct}% OFF</span>
+                </div>
+              ` : `
+                <div class="q-hotel-price-value">${formatCOP(hotel.pvf)}</div>
+              `}
+              <div class="q-hotel-price-label" style="text-transform:uppercase; letter-spacing:1px; margin-top:2px;">Valor Adulto</div>
+              
+              ${hotel.pvfNiñoStd > 0 ? `
+                <div style="margin-top:12px; border-top:1px solid rgba(255,255,255,0.1); padding-top:8px;">
+                  ${hotel.discountPct > 0 ? `
+                    <div style="text-decoration:line-through; font-size:0.75rem; color:rgba(255,255,255,0.4); margin-bottom:-2px;">${formatCOP(hotel.pvfNiñoStd)}</div>
+                    <div class="q-hotel-price-value" style="font-size:1.5rem; color:var(--teal-400)">${formatCOP(hotel.pvfNiño)}</div>
+                  ` : `
+                    <div class="q-hotel-price-value" style="font-size:1.5rem; color:var(--teal-400)">${formatCOP(hotel.pvfNiño)}</div>
+                  `}
+                  <div class="q-hotel-price-label" style="font-size:0.6rem;">Valor Niño</div>
+                </div>
+              ` : ''}
             </div>
           </div>
         </div>

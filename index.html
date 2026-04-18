@@ -148,6 +148,17 @@
                   <p class="field-hint">PVF = Costo Base ÷ (1 - %)</p>
                 </div>
                 <div class="field-group">
+                  <label class="field-label" for="discount">% Descuento Promo</label>
+                  <div class="input-suffix-wrap">
+                    <input type="number" id="discount" class="field-input" placeholder="0" min="0" max="99" step="1" oninput="recalcAllHotels()">
+                    <span class="input-suffix" style="color:var(--success)">% OFF</span>
+                  </div>
+                  <p class="field-hint">Aplica sobre el PVF final</p>
+                </div>
+              </div>
+
+              <div class="field-row">
+                <div class="field-group">
                   <label class="field-label" for="plan-type">Tipo de Plan</label>
                   <select id="plan-type" class="field-input">
                     <option value="todo incluido">Todo Incluido</option>
