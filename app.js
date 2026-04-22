@@ -1294,6 +1294,8 @@ function gatherFormData() {
     })
     .filter(h => h.name);
 
+  const transfersChk = document.getElementById('chk-transfers').checked;
+  const medicalChk   = document.getElementById('chk-medical').checked;
   const tourismChk  = document.getElementById('chk-tourism').checked;
   const vaccineChk  = document.getElementById('chk-vaccine').checked;
   const recomChk    = document.getElementById('chk-recom').checked;
@@ -1301,6 +1303,7 @@ function gatherFormData() {
   const vaccineText = document.getElementById('vaccine-text').value.trim();
   const recomText   = document.getElementById('recom-text').value.trim();
   const extraNotInc = document.getElementById('extra-not-inc').value.trim();
+
 
   return {
     destination:  document.getElementById('destination').value.trim(),
@@ -1319,6 +1322,8 @@ function gatherFormData() {
     flightLegs:   state.flightLegs,
     tourismCard:  tourismChk ? tourismText : null,
     vaccine:      vaccineChk ? vaccineText : null,
+    includeTransfers: transfersChk,
+    includeMedical:   medicalChk,
     extraNotInc,
     today:        formatDateES(new Date()),
   };
@@ -1488,8 +1493,8 @@ function buildQuoteHTML(d) {
             <ul>
               <li>${ticketsText}</li>
               <li>Alojamiento ${durationStr} con plan <strong>${d.planType}</strong></li>
-              <li>Traslado aeropuerto — hotel — aeropuerto</li>
-              <li>Asistencia médica de viaje</li>
+              ${d.includeTransfers ? '<li>Traslado aeropuerto — hotel — aeropuerto</li>' : ''}
+              ${d.includeMedical ? '<li>Asistencia médica de viaje</li>' : ''}
             </ul>
           </div>
           <div class="q-box q-box-excludes">
