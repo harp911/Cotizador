@@ -1335,8 +1335,8 @@ function gatherFormData() {
 function buildQuoteHTML(d) {
   const ref = `COT-${new Date().getFullYear()}${String(new Date().getMonth()+1).padStart(2,'0')}${String(new Date().getDate()).padStart(2,'0')}-${Math.floor(Math.random()*900+100)}`;
 
-  const clientStr  = d.clientName  ? `<strong>${d.clientName}</strong>, es` : 'Es';
-  const paxStr     = d.numPax      ? ` para <strong>${d.numPax} pasajero(s)</strong>` : '';
+  const clientGreeting = d.clientName  ? `Hola <strong>${d.clientName}</strong>, ` : 'Hola, ';
+  const paxInfo        = d.numPax      ? ` para <strong>${d.numPax} pasajero(s)</strong>` : '';
   const durationStr = `<strong>${d.days} días / ${d.nights} noches</strong>`;
 
   // Build "no incluye" list
@@ -1477,11 +1477,11 @@ function buildQuoteHTML(d) {
         <!-- Greeting -->
         <div class="quote-greeting">
           <p>
-            ${clientStr} para <strong>Viajando por el Mundo</strong> un placer contar con clientes como usted${paxStr}.
-            Adjunto enviamos la cotización detallada del plan a
-            <span class="trip-highlight">${d.destination}</span>,
-            con salida el <span class="trip-highlight">${d.dateStart}</span>
-            y regreso el <span class="trip-highlight">${d.dateEnd}</span>.
+            ${clientGreeting}gracias por confiar en <strong>Viajando por el Mundo</strong> para tu próximo viaje.<br><br>
+            Te compartimos una propuesta a <span class="trip-highlight">${d.destination}</span>${paxInfo}, 
+            con salida el <span class="trip-highlight">${d.dateStart}</span> 
+            y regreso el <span class="trip-highlight">${d.dateEnd}</span>.<br><br>
+            Adjunto encontrarás todos los detalles de la cotización. Es una excelente oportunidad para disfrutar una experiencia única, con todo organizado para ti ✨
           </p>
         </div>
 
