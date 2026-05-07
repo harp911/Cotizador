@@ -1477,10 +1477,10 @@ function buildQuoteHTML(d) {
         <!-- Greeting -->
         <div class="quote-greeting">
           <p>
-            ${clientGreeting}gracias por confiar en <strong>Viajando por el Mundo</strong> para tu próximo viaje.<br><br>
+            ${clientGreeting}gracias por confiar en <strong>Viajando por el Mundo</strong> para tu próximo viaje.<br>
             Te compartimos una propuesta a <span class="trip-highlight">${d.destination}</span>${paxInfo}, 
             con salida el <span class="trip-highlight">${d.dateStart}</span> 
-            y regreso el <span class="trip-highlight">${d.dateEnd}</span>.<br><br>
+            y regreso el <span class="trip-highlight">${d.dateEnd}</span>.<br>
             Adjunto encontrarás todos los detalles de la cotización. Es una excelente oportunidad para disfrutar una experiencia única, con todo organizado para ti ✨
           </p>
         </div>
