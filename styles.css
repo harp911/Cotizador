@@ -1284,8 +1284,8 @@ select.field-input option {
   background: #FFF9E6;
   border: 1px solid #FDE68A;
   border-radius: 12px;
-  padding: 16px 18px;
-  margin-bottom: 24px;
+  padding: 12px 14px;
+  margin-bottom: 18px;
 }
 
 .q-notes-title {
@@ -1294,23 +1294,23 @@ select.field-input option {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: #92400E;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
 .q-notes ul { list-style: none; padding: 0; }
 .q-notes ul li {
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   color: #78350F;
-  padding: 6px 0;
-  line-height: 1.6;
+  padding: 3px 0;
+  line-height: 1.4;
   position: relative;
-  padding-left: 25px; /* Espacio para el icono fixed */
+  padding-left: 20px; /* Espacio para el icono fixed */
 }
 .q-notes ul li::before { 
   content: '⚠'; 
   position: absolute;
   left: 0;
-  top: 6px;
+  top: 3px;
   font-weight: bold;
 }
 
