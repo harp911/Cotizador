@@ -1303,6 +1303,7 @@ function gatherFormData() {
   const vaccineText = document.getElementById('vaccine-text').value.trim();
   const recomText   = document.getElementById('recom-text').value.trim();
   const extraNotInc = document.getElementById('extra-not-inc').value.trim();
+  const extraServices = document.getElementById('extra-services').value.trim();
 
 
   return {
@@ -1325,6 +1326,7 @@ function gatherFormData() {
     includeTransfers: transfersChk,
     includeMedical:   medicalChk,
     extraNotInc,
+    extraServices,
     today:        formatDateES(new Date()),
   };
 }
@@ -1495,6 +1497,7 @@ function buildQuoteHTML(d) {
               <li>Alojamiento ${durationStr} con plan <strong>${d.planType}</strong></li>
               ${d.includeTransfers ? '<li>Traslado aeropuerto — hotel — aeropuerto</li>' : ''}
               ${d.includeMedical ? '<li>Asistencia médica de viaje</li>' : ''}
+              ${d.extraServices ? d.extraServices.split('\n').filter(Boolean).map(s => `<li>${s.trim()}</li>`).join('') : ''}
             </ul>
           </div>
           <div class="q-box q-box-excludes">
