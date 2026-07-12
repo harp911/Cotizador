@@ -1900,3 +1900,25 @@ select.field-input option {
     transform: rotate(360deg) translateX(65px) rotate(90deg);
   }
 }
+
+/* ════════════════════════════════════════════════════════════════
+   COMBINED DESTINATION GROUPS
+   ════════════════════════════════════════════════════════════════ */
+.hotels-group-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--gold-400);
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  background: rgba(245, 166, 35, 0.08);
+  border-radius: 8px;
+  border-left: 3px solid var(--gold-400);
+}
+
+.hotels-group-title.dest2 {
+  color: var(--teal-400);
+  background: rgba(13, 183, 175, 0.08);
+  border-left-color: var(--teal-400);
+}

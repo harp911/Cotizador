@@ -121,10 +121,61 @@
             <div class="section-body open">
               <div class="field-row">
                 <div class="field-group">
-                  <label class="field-label" for="destination">Destino <span class="req">*</span></label>
+                  <label class="field-label" for="destination" id="lbl-destination">Destino <span class="req">*</span></label>
                   <input type="text" id="destination" class="field-input" list="destinations-list" placeholder="Ej: Punta Cana, República Dominicana" onchange="saveDestinationToDB(this.value)">
                   <datalist id="destinations-list"></datalist>
                   <datalist id="hotel-names-list"></datalist>
+                </div>
+              </div>
+
+              <!-- Toggle Destino Combinado -->
+              <div class="toggle-field" style="margin-bottom: 14px;">
+                <label class="toggle-label">
+                  <input type="checkbox" id="chk-combined" onchange="toggleCombinedMode()">
+                  <span class="toggle-switch"></span>
+                  <span style="font-weight:600; color:var(--teal-400);">🔀 Destino Combinado</span>
+                </label>
+              </div>
+
+              <!-- Campos adicionales para Destino Combinado -->
+              <div id="combined-fields" style="display:none; margin-top: 10px; border-left: 3px solid var(--teal-500); padding-left: 12px; margin-bottom: 20px;">
+                <div class="field-row">
+                  <div class="field-group">
+                    <label class="field-label" for="destination-2">Destino 2 <span class="req">*</span></label>
+                    <input type="text" id="destination-2" class="field-input" list="destinations-list" placeholder="Ej: Cancún, México" onchange="saveDestinationToDB(this.value)">
+                  </div>
+                </div>
+                <div class="field-row two-col">
+                  <div class="field-group">
+                    <label class="field-label" for="nights-dest1">Noches Destino 1 <span class="req">*</span></label>
+                    <input type="number" id="nights-dest1" class="field-input" min="0" placeholder="Ej: 2" oninput="updateCombinedDuration()">
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="nights-dest2">Noches Destino 2 <span class="req">*</span></label>
+                    <input type="number" id="nights-dest2" class="field-input" min="0" placeholder="Ej: 5" oninput="updateCombinedDuration()">
+                  </div>
+                </div>
+                <div class="field-row two-col">
+                  <div class="field-group">
+                    <label class="field-label" for="plan-type-dest1">Plan Destino 1</label>
+                    <select id="plan-type-dest1" class="field-input">
+                      <option value="desayuno incluido" selected>Desayuno Incluido</option>
+                      <option value="todo incluido">Todo Incluido</option>
+                      <option value="solo alojamiento">Solo Alojamiento</option>
+                      <option value="media pensión">Media Pensión</option>
+                      <option value="pensión completa">Pensión Completa</option>
+                    </select>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="plan-type-dest2">Plan Destino 2</label>
+                    <select id="plan-type-dest2" class="field-input">
+                      <option value="todo incluido" selected>Todo Incluido</option>
+                      <option value="desayuno incluido">Desayuno Incluido</option>
+                      <option value="solo alojamiento">Solo Alojamiento</option>
+                      <option value="media pensión">Media Pensión</option>
+                      <option value="pensión completa">Pensión Completa</option>
+                    </select>
+                  </div>
                 </div>
               </div>
               <div class="field-row two-col">
@@ -159,7 +210,7 @@
                 </div>
               </div>
 
-              <div class="field-row">
+              <div class="field-row" id="global-plan-group">
                 <div class="field-group">
                   <label class="field-label" for="plan-type">Tipo de Plan</label>
                   <select id="plan-type" class="field-input">
@@ -260,10 +311,31 @@
               <span class="chevron open">›</span>
             </div>
             <div class="section-body open">
-              <div id="hotels-list"></div>
-              <button class="btn btn-add-hotel" onclick="addHotel()">
-                <span class="btn-plus">+</span> Agregar Hotel
-              </button>
+              <!-- Modo Normal -->
+              <div id="normal-hotels-section">
+                <div id="hotels-list"></div>
+                <button class="btn btn-add-hotel" onclick="addHotel()">
+                  <span class="btn-plus">+</span> Agregar Hotel
+                </button>
+              </div>
+
+              <!-- Modo Combinado: Destino 1 (Fijo) -->
+              <div id="hotels-dest1-section" style="display:none; margin-bottom: 24px;">
+                <div class="hotels-group-title">🏢 Destino 1: Hotel Fijo (CDMX / Primer Destino)</div>
+                <div id="hotels-list-dest1"></div>
+                <button class="btn btn-add-hotel" id="btn-add-hotel-dest1" onclick="addHotel(1)">
+                  <span class="btn-plus">+</span> Agregar Hotel Destino 1
+                </button>
+              </div>
+
+              <!-- Modo Combinado: Destino 2 (Opciones) -->
+              <div id="hotels-dest2-section" style="display:none;">
+                <div class="hotels-group-title dest2">🏝️ Destino 2: Opciones de Alojamiento (Cancún / Segundo Destino)</div>
+                <div id="hotels-list-dest2"></div>
+                <button class="btn btn-add-hotel" id="btn-add-hotel-dest2" onclick="addHotel(2)">
+                  <span class="btn-plus">+</span> Agregar Opción Hotel Destino 2
+                </button>
+              </div>
             </div>
           </div>
 
