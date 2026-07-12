@@ -1352,7 +1352,7 @@ function gatherFormData() {
   const end      = new Date(endVal   + 'T00:00:00');
   const diffDays = Math.round((end - start) / 86400000);
 
-    const hotels = state.hotels
+    const mappedHotels = state.hotels
     .map(h => {
       const nameEl  = document.getElementById(`hotel-name-${h.id}`);
       const costoEl = document.getElementById(`hotel-costo-${h.id}`);
@@ -1398,7 +1398,10 @@ function gatherFormData() {
         images: h.images 
       };
     })
-    .filter(h => h.name && (!state.isCombined || h.group === 2));
+    .filter(h => h.name);
+
+    const hotels = mappedHotels.filter(h => !state.isCombined || h.group === 2);
+    const fixedHotel = state.isCombined ? (mappedHotels.find(h => h.group === 1) || null) : null;
 
   const transfersChk = document.getElementById('chk-transfers').checked;
   const medicalChk   = document.getElementById('chk-medical').checked;
@@ -1498,6 +1501,51 @@ function buildQuoteHTML(d) {
     : `<tr><td colspan="7" style="text-align:center;padding:20px;color:#8FA3C7;">
          No se han cargado datos de vuelo. Sube la imagen y extrae los datos con IA.
        </td></tr>`;
+
+  // Fixed Hotel Card (Combined Destination D1)
+  let fixedHotelCardHTML = '';
+  if (d.isCombined && d.fixedHotel) {
+    const hotel = d.fixedHotel;
+    const imgs = hotel.images || {};
+    const slots = [
+      { key: 'piscina',     emoji: '🏊' },
+      { key: 'fachada',     emoji: '🏨' },
+      { key: 'habitacion',  emoji: '🛏' },
+      { key: 'restaurante', emoji: '🍽' },
+    ];
+
+    const imgCells = slots.map((s, i) => {
+      const url = imgs[s.key] || '';
+      if (url && (url.startsWith('http') || url.startsWith('data:'))) {
+        return `<img src="${url}" alt="${s.emoji} ${hotel.name}" style="width:100%;height:100%;object-fit:cover;">`;
+      }
+      return `<div class="img-placeholder">${s.emoji}</div>`;
+    }).join('');
+
+    fixedHotelCardHTML = `
+      <div style="page-break-before: always; break-before: page; padding-top: 30px;">
+        <div class="q-section-title">Alojamiento en ${d.destination} (Fijo)</div>
+        <div class="q-hotel-section">
+          <div class="q-hotel-card">
+            <div class="q-hotel-img-grid">${imgCells}</div>
+            <div class="q-hotel-info">
+              <div class="q-hotel-name">${hotel.name}</div>
+              <div class="q-hotel-plan">Plan: ${d.planType1} &mdash; ${d.nightsDest1} noches</div>
+              <div class="q-hotel-price-box" style="align-items: center; justify-content: space-between;">
+                <div>
+                  <div class="q-hotel-price-label">Valor de estadía</div>
+                  <div class="q-hotel-price-sub">Este alojamiento ya está incluido en los precios finales de las opciones de ${d.destination2}.</div>
+                </div>
+                <div style="text-align:right">
+                  <div class="q-hotel-price-value" style="color:#F5A623; font-size:1.5rem; text-shadow:none;">INCLUIDO</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
 
   // Hotel cards
   const hotelCardsHTML = d.hotels.map(hotel => {
@@ -1666,6 +1714,8 @@ function buildQuoteHTML(d) {
         </table>
 
         <!-- Hotel Options -->
+        ${fixedHotelCardHTML}
+        
         <div style="page-break-before: always; break-before: page; padding-top: 30px;">
           <div class="q-section-title">${d.isCombined && d.destination2 ? `Opciones de Alojamiento en ${d.destination2}` : 'Opciones de Alojamiento'}</div>
           <div class="q-hotel-section">
