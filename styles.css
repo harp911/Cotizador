@@ -290,7 +290,8 @@ a:hover { text-decoration: underline; }
 
 .field-row { margin-bottom: 14px; }
 .field-row.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.field-row.two-col .field-group { margin-bottom: 0; }
+.field-row.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.field-row.two-col .field-group, .field-row.three-col .field-group { margin-bottom: 0; }
 
 .field-label {
   display: block;

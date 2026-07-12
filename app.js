@@ -444,8 +444,31 @@ function updateDuration() {
 
   const days   = Math.round(diffMs / 86400000);
   const nights = days;
+
+  // Actualizar campo de noches si no es el foco actual
+  const nightsInput = document.getElementById('num-nights');
+  if (nightsInput && document.activeElement !== nightsInput) {
+    nightsInput.value = nights;
+  }
+
   txt.textContent = `${days + 1} días / ${nights} noches`;
   badge.style.display = 'flex';
+}
+
+function calculateEndDateFromNights() {
+  const startVal = document.getElementById('date-start').value;
+  const nightsVal = parseInt(document.getElementById('num-nights').value) || 0;
+  if (!startVal) return;
+
+  const start = new Date(startVal + 'T00:00:00');
+  start.setDate(start.getDate() + nightsVal);
+
+  const year = start.getFullYear();
+  const month = String(start.getMonth() + 1).padStart(2, '0');
+  const day = String(start.getDate()).padStart(2, '0');
+  
+  document.getElementById('date-end').value = `${year}-${month}-${day}`;
+  updateDuration();
 }
 
 /* ────────────────────────────────────────────────────────────────
